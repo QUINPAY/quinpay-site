@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Gracias! — QUINPAY</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600&family=Jost:wght@300;400&display=swap');
+  body{ background:#0b0906; color:#f3ede1; font-family:'Jost',sans-serif; font-weight:300; min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px; }
+  .box{ max-width:420px; }
+  img{ width:88px; height:88px; border-radius:50%; margin-bottom:26px; }
+  h1{ font-family:'Cormorant Garamond',serif; font-weight:600; font-size:2.2rem; color:#e3c885; margin-bottom:16px; }
+  p{ color:#cfc6b4; line-height:1.6; margin-bottom:30px; }
+  a{ display:inline-flex; align-items:center; gap:8px; background:#c9a24a; color:#0b0906; padding:14px 32px; border-radius:2px; text-decoration:none; font-size:0.85rem; letter-spacing:0.06em; text-transform:uppercase; font-weight:500; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <img src="images/logo.jpg" alt="QUINPAY">
+    <h1>¡Gracias por tu compra!</h1>
+    <p>Ya recibimos tu pago. Escribinos por WhatsApp con tu nombre para coordinar el retiro en Morón o el envío a zona oeste.</p>
+    <a id="waLink" href="#" target="_blank" rel="noopener">Avisar por WhatsApp</a>
+  </div>
+  <script>
+    document.getElementById("waLink").href = "https://wa.me/5491138244569?text=" + encodeURIComponent("Hola QUINPAY! Acabo de pagar mi pedido con Mercado Pago, te paso mis datos para coordinar la entrega.");
+  </script>
+</body>
+</html>
