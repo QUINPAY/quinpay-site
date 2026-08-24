@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const { getQuinpayStore } = require("./lib/store");
 const seed = require("../../data/products-seed.json");
 
@@ -14,7 +15,6 @@ exports.handler = async function (event) {
       return { statusCode: 400, body: JSON.stringify({ error: "Carrito vacío" }) };
     }
 
-    // Load current authoritative prices/stock (seed + admin overrides)
     const store = getQuinpayStore();
     let overrides = {};
     try {
@@ -28,28 +28,37 @@ exports.handler = async function (event) {
       catalog[p.id] = {
         ...p,
         price: typeof o.price === "number" ? o.price : p.price,
-        in_stock: typeof o.in_stock === "boolean" ? o.in_stock : p.in_stock,
+        stock: typeof o.stock === "number" ? o.stock : p.stock,
       };
     });
 
     const items = [];
+    const orderLines = []; // what we'll decrement from stock once payment is confirmed
 
     for (const line of cart) {
       const product = catalog[line.id];
       if (!product) continue;
-      if (!product.in_stock) {
+      const qty = Math.max(1, Math.min(10, parseInt(line.qty) || 1));
+
+      if (product.stock < qty) {
         return {
           statusCode: 400,
-          body: JSON.stringify({ error: `${product.name} ya no tiene stock` }),
+          body: JSON.stringify({
+            error:
+              product.stock > 0
+                ? `Solo quedan ${product.stock} unidad(es) de ${product.name}`
+                : `${product.name} ya no tiene stock`,
+          }),
         };
       }
-      const qty = Math.max(1, Math.min(10, parseInt(line.qty) || 1));
+
       items.push({
         title: `${product.name} (${product.brand})`,
         quantity: qty,
         currency_id: "ARS",
         unit_price: product.price,
       });
+      orderLines.push({ id: line.id, qty });
     }
 
     if (items.length === 0) {
@@ -58,7 +67,7 @@ exports.handler = async function (event) {
 
     if (mode === "envio") {
       items.push({
-        title: "Envío a zona oeste",
+        title: "Envío a domicilio",
         quantity: 1,
         currency_id: "ARS",
         unit_price: 5000,
@@ -66,9 +75,19 @@ exports.handler = async function (event) {
     }
 
     const base = siteUrl || `https://${event.headers.host}`;
+    const orderId = crypto.randomUUID();
+
+    // Save the pending order so the webhook can decrement stock once MP confirms payment
+    await store.setJSON(`order:${orderId}`, {
+      lines: orderLines,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    });
 
     const preference = {
       items,
+      external_reference: orderId,
+      notification_url: `${base}/.netlify/functions/mp-webhook`,
       back_urls: {
         success: `${base}/gracias.html`,
         pending: `${base}/gracias.html`,
