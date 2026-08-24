@@ -14,10 +14,12 @@ exports.handler = async function () {
 
     const products = seed.map((p) => {
       const o = overrides[p.id] || {};
+      const stock = typeof o.stock === "number" ? o.stock : p.stock;
       return {
         ...p,
         price: typeof o.price === "number" ? o.price : p.price,
-        in_stock: typeof o.in_stock === "boolean" ? o.in_stock : p.in_stock,
+        stock: stock,
+        in_stock: stock > 0,
       };
     });
 
