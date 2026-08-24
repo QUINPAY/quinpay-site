@@ -270,6 +270,7 @@ function renderCatalog(){
         <h3>${p.name}</h3>
         <p class="gender">${p.gender}</p>
         <div class="notes-mini"><span><strong>Inspirado en:</strong> ${p.inspired}</span></div>
+        ${(!soldOut && p.stock <= 3) ? `<p style="color:#c9a24a; font-size:0.72rem; margin-bottom:10px;">Quedan ${p.stock} unidad(es)</p>` : ''}
         <div class="price-row">
           <div><span class="price">${money(p.price)}</span><span class="price-sub">retirando en Morón</span></div>
           <div class="price-pickup">Envío zona oeste: ${money(p.price+5000)}</div>
@@ -325,11 +326,23 @@ function closeDetail(){
 // ---- CART ----
 function saveCart(){ localStorage.setItem("quinpay_cart", JSON.stringify(CART)); }
 function addToCart(id){
-  CART[id] = (CART[id] || 0) + 1;
+  const p = PRODUCTS.find(x => x.id === id);
+  if(!p) return;
+  const current = CART[id] || 0;
+  if(current >= p.stock){
+    alert(`Solo quedan ${p.stock} unidad(es) de ${p.name}`);
+    return;
+  }
+  CART[id] = current + 1;
   saveCart(); renderCart(); openCart();
 }
 function changeQty(id, delta){
   if(!CART[id]) return;
+  const p = PRODUCTS.find(x => x.id === id);
+  if(delta > 0 && p && CART[id] >= p.stock){
+    alert(`Solo quedan ${p.stock} unidad(es) de ${p.name}`);
+    return;
+  }
   CART[id] += delta;
   if(CART[id] <= 0) delete CART[id];
   saveCart(); renderCart();

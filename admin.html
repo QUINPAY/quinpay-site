@@ -48,7 +48,7 @@
       <a href="index.html" style="color:var(--gold-dim); font-size:0.85rem;">← Ver la página</a>
     </header>
     <table>
-      <thead><tr><th>Perfume</th><th>Precio (retiro)</th><th>Stock</th></tr></thead>
+      <thead><tr><th>Perfume</th><th>Precio (retiro)</th><th>Stock disponible</th></tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
     <div class="save-bar">
@@ -101,19 +101,14 @@ function renderTable(){
     <tr data-id="${p.id}">
       <td class="name">${p.name}<br><span class="brand">${p.brand}</span></td>
       <td><input type="number" class="price-input" value="${p.price}" min="0" step="500" onchange="markChange('${p.id}','price',this.value)"></td>
-      <td>
-        <label class="stock-toggle">
-          <input type="checkbox" ${p.in_stock ? "checked" : ""} onchange="markChange('${p.id}','in_stock',this.checked)">
-          En stock
-        </label>
-      </td>
+      <td><input type="number" class="price-input" style="width:80px" value="${p.stock}" min="0" step="1" onchange="markChange('${p.id}','stock',this.value)"> unidades</td>
     </tr>
   `).join("");
 }
 
 function markChange(id, field, value){
   if(!CHANGES[id]) CHANGES[id] = {};
-  CHANGES[id][field] = field === "price" ? parseInt(value) : value;
+  CHANGES[id][field] = parseInt(value);
 }
 
 async function saveChanges(){
