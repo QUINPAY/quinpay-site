@@ -58,7 +58,7 @@ exports.handler = async function (event) {
         currency_id: "ARS",
         unit_price: product.price,
       });
-      orderLines.push({ id: line.id, qty });
+      orderLines.push({ id: line.id, name: product.name, qty, unitPrice: product.price });
     }
 
     if (items.length === 0) {
@@ -77,9 +77,14 @@ exports.handler = async function (event) {
     const base = siteUrl || `https://${event.headers.host}`;
     const orderId = crypto.randomUUID();
 
+    const deliveryFee = mode === "envio" ? 5000 : 0;
+    const orderTotal = orderLines.reduce((sum, l) => sum + l.unitPrice * l.qty, 0) + deliveryFee;
+
     // Save the pending order so the webhook can decrement stock once MP confirms payment
     await store.setJSON(`order:${orderId}`, {
       lines: orderLines,
+      mode: mode === "envio" ? "envio" : "retiro",
+      total: orderTotal,
       status: "pending",
       createdAt: new Date().toISOString(),
     });
