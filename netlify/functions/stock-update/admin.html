@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel QUINPAY</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600&family=Jost:wght@300;400;500&display=swap');
+  :root{ --black:#0b0906; --black-2:#141110; --gold:#c9a24a; --gold-light:#e3c885; --gold-dim:#8a723a; --cream:#f3ede1; --cream-dim:#cfc6b4; --line:rgba(201,162,74,0.25); }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--black); color:var(--cream); font-family:'Jost',sans-serif; font-weight:300; min-height:100vh; }
+  h1{ font-family:'Cormorant Garamond',serif; font-weight:600; color:var(--gold-light); }
+  .wrap{ max-width:900px; margin:0 auto; padding:50px 20px 80px; }
+  .login-box{ max-width:360px; margin:100px auto; text-align:center; }
+  .login-box h1{ font-size:1.8rem; margin-bottom:24px; }
+  input[type="password"], input[type="number"]{ background:var(--black-2); border:1px solid var(--line); color:var(--cream); padding:12px 16px; border-radius:3px; font-family:inherit; font-size:0.95rem; width:100%; }
+  input:focus{ outline:1px solid var(--gold); }
+  button{ font-family:inherit; cursor:pointer; }
+  .btn{ background:var(--gold); color:var(--black); border:none; padding:12px 26px; border-radius:2px; font-size:0.85rem; letter-spacing:0.05em; text-transform:uppercase; font-weight:500; margin-top:14px; }
+  .btn:hover{ background:var(--gold-light); }
+  .err{ color:#e08a8a; font-size:0.85rem; margin-top:10px; display:none; }
+  header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; flex-wrap:wrap; gap:12px; }
+  table{ width:100%; border-collapse:collapse; }
+  th{ text-align:left; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold-dim); padding:10px 8px; border-bottom:1px solid var(--line); }
+  td{ padding:10px 8px; border-bottom:1px solid var(--line); font-size:0.88rem; vertical-align:middle; }
+  td.name{ color:var(--gold-light); font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; }
+  td.brand{ color:var(--cream-dim); font-size:0.78rem; }
+  .price-input{ width:110px; }
+  .stock-toggle{ display:flex; align-items:center; gap:8px; cursor:pointer; }
+  .save-bar{ position:sticky; bottom:0; background:var(--black); padding:18px 0; margin-top:20px; border-top:1px solid var(--line); display:flex; align-items:center; gap:16px; }
+  .save-msg{ font-size:0.85rem; color:#8fce9c; display:none; }
+  .hidden{ display:none; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div id="loginBox" class="login-box">
+    <h1>Panel QUINPAY</h1>
+    <input type="password" id="passwordInput" placeholder="Contraseña" autocomplete="current-password">
+    <button class="btn" onclick="login()">Entrar</button>
+    <p class="err" id="loginErr">Contraseña incorrecta.</p>
+  </div>
+
+  <div id="panel" class="hidden">
+    <header>
+      <h1>Precios y stock</h1>
+      <a href="index.html" style="color:var(--gold-dim); font-size:0.85rem;">← Ver la página</a>
+    </header>
+    <table>
+      <thead><tr><th>Perfume</th><th>Precio (retiro)</th><th>Stock disponible</th></tr></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="save-bar">
+      <button class="btn" onclick="saveChanges()">Guardar cambios</button>
+      <span class="save-msg" id="saveMsg">✓ Cambios guardados</span>
+      <span class="err" id="saveErr" style="margin-top:0;"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+let PASSWORD = sessionStorage.getItem("quinpay_admin_pw") || "";
+let PRODUCTS = [];
+let CHANGES = {};
+
+async function login(){
+  const pw = document.getElementById("passwordInput").value;
+  const errEl = document.getElementById("loginErr");
+  errEl.style.display = "none";
+  try{
+    const res = await fetch("/.netlify/functions/admin-login", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ password: pw })
+    });
+    const data = await res.json();
+    if(data.ok){
+      PASSWORD = pw;
+      sessionStorage.setItem("quinpay_admin_pw", pw);
+      showPanel();
+    } else {
+      errEl.style.display = "block";
+    }
+  }catch(e){
+    errEl.textContent = "Error de conexión, probá de nuevo.";
+    errEl.style.display = "block";
+  }
+}
+
+async function showPanel(){
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("panel").classList.remove("hidden");
+  const res = await fetch("/.netlify/functions/get-products");
+  PRODUCTS = await res.json();
+  renderTable();
+}
+
+function renderTable(){
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = PRODUCTS.map(p => `
+    <tr data-id="${p.id}">
+      <td class="name">${p.name}<br><span class="brand">${p.brand}</span></td>
+      <td><input type="number" class="price-input" value="${p.price}" min="0" step="500" onchange="markChange('${p.id}','price',this.value)"></td>
+      <td><input type="number" class="price-input" style="width:80px" value="${p.stock}" min="0" step="1" onchange="markChange('${p.id}','stock',this.value)"> unidades</td>
+    </tr>
+  `).join("");
+}
+
+function markChange(id, field, value){
+  if(!CHANGES[id]) CHANGES[id] = {};
+  CHANGES[id][field] = parseInt(value);
+}
+
+async function saveChanges(){
+  const saveMsg = document.getElementById("saveMsg");
+  const saveErr = document.getElementById("saveErr");
+  saveMsg.style.display = "none";
+  saveErr.style.display = "none";
+  if(Object.keys(CHANGES).length === 0){
+    saveMsg.textContent = "No hay cambios para guardar";
+    saveMsg.style.display = "inline";
+    return;
+  }
+  try{
+    const res = await fetch("/.netlify/functions/update-products", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ password: PASSWORD, changes: CHANGES })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "Error al guardar");
+    CHANGES = {};
+    saveMsg.textContent = "✓ Cambios guardados";
+    saveMsg.style.display = "inline";
+  }catch(e){
+    saveErr.textContent = e.message;
+    saveErr.style.display = "block";
+  }
+}
+
+if(PASSWORD){
+  fetch("/.netlify/functions/admin-login", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ password: PASSWORD })
+  }).then(r => r.json()).then(d => { if(d.ok) showPanel(); });
+}
+</script>
+
+</body>
+</html>
