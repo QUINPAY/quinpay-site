@@ -1,9 +1,9 @@
-const { getStore } = require("@netlify/blobs");
+const { getQuinpayStore } = require("./lib/store");
 const seed = require("../../data/products-seed.json");
 
 exports.handler = async function () {
   try {
-    const store = getStore("quinpay");
+    const store = getQuinpayStore();
     let overrides = {};
     try {
       const raw = await store.get("overrides", { type: "json" });
