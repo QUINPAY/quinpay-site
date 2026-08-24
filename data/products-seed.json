@@ -13,7 +13,7 @@
     "duration": "Larga duración, cerca de 7 horas",
     "inspired": "Stronger With You — Emporio Armani",
     "tag": "Ambarado",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "yara-tous",
@@ -29,7 +29,7 @@
     "duration": "Buena estela y larga duración",
     "inspired": "Fame — Paco Rabanne (también comparado con Alien Goddess de Mugler)",
     "tag": "Frutal gourmand",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "odyssey-candee",
@@ -45,7 +45,7 @@
     "duration": "Buena duración, ideal para uso diario",
     "inspired": "Her — Burberry",
     "tag": "Dulce floral",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "bad-femme",
@@ -61,7 +61,7 @@
     "duration": "6 horas o más",
     "inspired": "Good Girl — Carolina Herrera",
     "tag": "Floral ambarado",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "angham",
@@ -77,7 +77,7 @@
     "duration": "Muy larga duración, clásico de Lattafa",
     "inspired": "Goddess — Burberry",
     "tag": "Oriental vainillado",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "yeah-man",
@@ -93,7 +93,7 @@
     "duration": "6 a 8 horas",
     "inspired": "Y Le Parfum — Yves Saint Laurent",
     "tag": "Fresco amaderado",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "qaed-al-fursan",
@@ -109,7 +109,7 @@
     "duration": "5 a 7 horas",
     "inspired": "Black XS — Paco Rabanne",
     "tag": "Oriental amaderado",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "9pm",
@@ -125,7 +125,7 @@
     "duration": "8 a 10 horas",
     "inspired": "Ultra Male — Jean Paul Gaultier",
     "tag": "Dulce especiado",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "mandarin-sky",
@@ -141,7 +141,7 @@
     "duration": "Muy buena, estela fuerte",
     "inspired": "Scandal Pour Homme — Jean Paul Gaultier",
     "tag": "Cítrico gourmand",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "now-women",
@@ -157,7 +157,7 @@
     "duration": "Duración moderada a buena",
     "inspired": "Her Elixir — Burberry",
     "tag": "Floral dulce",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "honor-glory",
@@ -173,7 +173,7 @@
     "duration": "Larga duración",
     "inspired": "Sin un diseñador puntual: creación gourmand-oriental propia de Lattafa",
     "tag": "Gourmand especiado",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "the-kingdom",
@@ -189,7 +189,7 @@
     "duration": "Larga duración",
     "inspired": "Wedding Silk Santal — Kayali",
     "tag": "Floral gourmand",
-    "in_stock": true
+    "stock": 3
   },
   {
     "id": "hawas-for-him",
@@ -205,6 +205,6 @@
     "duration": "Larga duración, muy buena proyección",
     "inspired": "Invictus Aqua — Paco Rabanne",
     "tag": "Acuático aromático",
-    "in_stock": true
+    "stock": 3
   }
 ]
