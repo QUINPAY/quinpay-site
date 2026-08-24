@@ -1,7 +1,1 @@
-[build]
-  publish = "."
-  command = "echo 'no build step needed'"
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
+[build] publish = "." command = "npm install" [functions] directory = "netlify/functions" node_bundler = "esbuild"
