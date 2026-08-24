@@ -174,7 +174,7 @@
   <img class="hero-logo" src="images/logo.jpg" alt="QUINPAY">
   <h1>Fragancias <em>importadas</em>,<br>con carácter árabe</h1>
   <div class="divider"></div>
-  <p class="sub">Perfumes 100% originales e importados, seleccionados uno por uno. Retirá en Morón o recibilo en la puerta de tu casa si estás en zona oeste.</p>
+  <p class="sub">Perfumes 100% originales e importados, seleccionados uno por uno. Retirá en Morón o recibilo en la puerta de tu casa si estás en Ituzaingó, Castelar, Morón, Haedo o Ramos Mejía.</p>
   <div class="hero-badges">
     <span class="badge">100% originales</span>
     <span class="badge">Retiro en Morón</span>
@@ -206,7 +206,7 @@
   <div class="cart-footer">
     <div class="mode-toggle">
       <div class="mode-option active" data-mode="retiro" onclick="setMode('retiro')">Retiro en Morón</div>
-      <div class="mode-option" data-mode="envio" onclick="setMode('envio')">Envío zona oeste (+$5.000)</div>
+      <div class="mode-option" data-mode="envio" onclick="setMode('envio')">Envío (+$5.000)</div>
     </div>
     <div class="total-row"><span class="label">Total</span><span class="amount" id="cartTotal">$0</span></div>
     <p class="cart-error" id="cartError" style="display:none;"></p>
@@ -218,7 +218,7 @@
 <section class="info-section">
   <div class="info-grid">
     <div class="info-card"><h3>🏠 Retiro en Morón</h3><p>El precio publicado en cada perfume es retirando por Morón. Coordinamos el horario por WhatsApp.</p></div>
-    <div class="info-card"><h3>🛵 Envíos a zona oeste</h3><p>Si preferís que te lo llevemos, sumá $5.000 al total por el envío dentro de zona oeste.</p></div>
+    <div class="info-card"><h3>🛵 Envíos</h3><p>Hacemos envíos a Ituzaingó, Castelar, Morón, Haedo y Ramos Mejía. Sumá $5.000 al total por el envío.</p></div>
     <div class="info-card"><h3>💳 Formas de pago</h3><p>Pagá online con Mercado Pago (tarjeta, dinero en cuenta o transferencia) o coordiná efectivo por WhatsApp.</p></div>
   </div>
 </section>
@@ -273,7 +273,7 @@ function renderCatalog(){
         ${(!soldOut && p.stock <= 3) ? `<p style="color:#c9a24a; font-size:0.72rem; margin-bottom:10px;">Quedan ${p.stock} unidad(es)</p>` : ''}
         <div class="price-row">
           <div><span class="price">${money(p.price)}</span><span class="price-sub">retirando en Morón</span></div>
-          <div class="price-pickup">Envío zona oeste: ${money(p.price+5000)}</div>
+          <div class="price-pickup">Envío: ${money(p.price+5000)}</div>
         </div>
         <div class="card-actions">
           <button class="btn-outline" onclick="openDetail('${p.id}')">Ver ficha</button>
@@ -307,7 +307,7 @@ function openDetail(id){
         </div>
         <div class="detail-price">
           <div><span class="price">${money(p.price)}</span> <span class="price-sub">retirando en Morón</span></div>
-          <div class="price-pickup">Envío a zona oeste: ${money(p.price+5000)}</div>
+          <div class="price-pickup">Envío: ${money(p.price+5000)}</div>
         </div>
         <div class="detail-actions">
           ${soldOut ? '<span class="btn-disabled">Sin stock por el momento</span>' : `<button class="btn-solid" onclick="addToCart('${p.id}'); closeDetail();">Agregar al carrito</button>`}
@@ -396,7 +396,7 @@ function renderCart(){
   document.getElementById("checkoutBtn").disabled = entries.length === 0;
 
   const waText = entries.length
-    ? `Hola QUINPAY! Quiero coordinar mi pedido:\n${entries.map(([id,qty]) => { const p=PRODUCTS.find(x=>x.id===id); return `- ${p.name} x${qty}`; }).join("\n")}\nModalidad: ${MODE === 'envio' ? 'Envío a zona oeste' : 'Retiro en Morón'}\nTotal: ${money(total)}`
+    ? `Hola QUINPAY! Quiero coordinar mi pedido:\n${entries.map(([id,qty]) => { const p=PRODUCTS.find(x=>x.id===id); return `- ${p.name} x${qty}`; }).join("\n")}\nModalidad: ${MODE === 'envio' ? 'Envío a domicilio' : 'Retiro en Morón'}\nTotal: ${money(total)}`
     : "Hola QUINPAY! Quiero consultar por sus perfumes";
   document.getElementById("checkoutWa").href = waLink(waText);
 }
