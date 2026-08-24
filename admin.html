@@ -30,6 +30,12 @@
   .save-bar{ position:sticky; bottom:0; background:var(--black); padding:18px 0; margin-top:20px; border-top:1px solid var(--line); display:flex; align-items:center; gap:16px; }
   .save-msg{ font-size:0.85rem; color:#8fce9c; display:none; }
   .hidden{ display:none; }
+  .stats-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px; margin-bottom:36px; }
+  .stat-card{ background:var(--black-2); border:1px solid var(--line); border-radius:4px; padding:18px 20px; }
+  .stat-card .label{ font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold-dim); display:block; margin-bottom:6px; }
+  .stat-card .value{ font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; color:var(--gold-light); }
+  .section-title{ font-size:1.3rem; margin:36px 0 14px; }
+  .small-note{ font-size:0.78rem; color:var(--cream-dim); }
 </style>
 </head>
 <body>
@@ -44,9 +50,23 @@
 
   <div id="panel" class="hidden">
     <header>
-      <h1>Precios y stock</h1>
+      <h1>Panel QUINPAY</h1>
       <a href="index.html" style="color:var(--gold-dim); font-size:0.85rem;">← Ver la página</a>
     </header>
+
+    <h2 class="section-title">Ventas</h2>
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><span class="label">Ventas pagadas</span><span class="value" id="statOrders">—</span></div>
+      <div class="stat-card"><span class="label">Total facturado</span><span class="value" id="statRevenue">—</span></div>
+    </div>
+
+    <table id="topProductsTable" style="margin-bottom:36px;">
+      <thead><tr><th>Perfume más vendido</th><th>Unidades vendidas</th><th>Recaudado</th></tr></thead>
+      <tbody id="topProductsBody"></tbody>
+    </table>
+    <p class="small-note" id="noSales" style="display:none;">Todavía no hay ventas confirmadas por Mercado Pago.</p>
+
+    <h2 class="section-title">Precios y stock</h2>
     <table>
       <thead><tr><th>Perfume</th><th>Precio (retiro)</th><th>Stock disponible</th></tr></thead>
       <tbody id="tableBody"></tbody>
@@ -93,6 +113,35 @@ async function showPanel(){
   const res = await fetch("/.netlify/functions/get-products");
   PRODUCTS = await res.json();
   renderTable();
+  loadSales();
+}
+
+function money(n){ return "$" + n.toLocaleString("es-AR"); }
+
+async function loadSales(){
+  try{
+    const res = await fetch("/.netlify/functions/get-sales", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ password: PASSWORD })
+    });
+    const data = await res.json();
+    if(!res.ok) return;
+
+    document.getElementById("statOrders").textContent = data.totalOrders;
+    document.getElementById("statRevenue").textContent = money(data.totalRevenue);
+
+    const tbody = document.getElementById("topProductsBody");
+    if(data.topProducts.length === 0){
+      document.getElementById("noSales").style.display = "block";
+      document.getElementById("topProductsTable").style.display = "none";
+    } else {
+      tbody.innerHTML = data.topProducts.map(p => `
+        <tr><td class="name">${p.name}</td><td>${p.qty}</td><td>${money(p.revenue)}</td></tr>
+      `).join("");
+    }
+  }catch(e){
+    console.error("No se pudieron cargar las ventas", e);
+  }
 }
 
 function renderTable(){
